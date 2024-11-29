@@ -10,7 +10,7 @@ object HttpParser {
 
 
     trait HttpEventCallback {
-        def process(event: HttpEvent)
+        def process(event: HttpEvent): Unit
     }
 
 
@@ -146,7 +146,8 @@ object HttpParser {
 
             var line: Option[Line] = None
             var endOfHeader = false
-            do {
+            var cont = true
+            while(cont) {
                 line = nextLine()
                 line match {
                     case Some(headerLine) if headerLine.eolPos == headerLine.startPos + 1 => // Empty
@@ -165,7 +166,8 @@ object HttpParser {
                         }
                     case None =>    // not got a Line, NOOP
                 }
-            } while(endOfHeader == false || line == None)
+                cont = !endOfHeader || line == None
+            } // while(endOfHeader == false || line == None)
 
             if(endOfHeader)
                 Some(headers.toMap)

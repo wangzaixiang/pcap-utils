@@ -19,7 +19,7 @@ import scala.collection.mutable
  *   List[(req, resp)] pcap.parseHttp( pcapFile )
  */
 
-package object pcap {
+package pcap {
 
     def parsePcapRecords(pcapFile: String) : List[PcapRecord] = {
         val in = new FileInputStream(pcapFile)
@@ -31,7 +31,7 @@ package object pcap {
 
         val streams = mutable.Map[(IP, Port, IP, Port), TcpOnewayStream]()
         val events = mutable.ListBuffer[HttpEvent]()
-        val callback = { event: HttpEvent => events.append(event); () }
+        val callback = { (event: HttpEvent) => events.append(event); () }
 
         parsePcapRecords(pcapFile).foreach {
             case TCPPacketExtractor(x: TCPPacket) =>

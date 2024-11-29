@@ -272,7 +272,7 @@ object Packet {
             if( in.read(header) != 16 )
                 throw new EOFException()
 
-            val inclLen =
+            val inclLen =   // packet length
                 (header(8) & 0xFF) |
                   ((header(8+1) & 0xFF) << 8) |
                   ((header(8+2) & 0xFF) << 16) |
@@ -303,13 +303,15 @@ object Packet {
 
             var record: Option[PcapRecord] = None
             var seq = 0
-            do {
+            var cont = true
+            while(cont) {
                 seq += 1
                 record = parseRecord(seq, in)
                 if(record != None){
                     buffer.append(record.get)
                 }
-            } while(record != None)
+                else cont = false
+            } // while(record != None)
 
             PcapFile(magicNumber, versionMajor, versionMinor, thisZone,
                 sigfigs, snaplen, network, buffer.toList)
